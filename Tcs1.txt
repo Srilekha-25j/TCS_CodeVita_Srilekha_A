@@ -1,0 +1,80 @@
+import java.util.*;
+import java.io.*;
+public class Tcs1 {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Input the number of elements
+        int N = scanner.nextInt();
+        int[] arr = new int[N];
+
+        // Input the array elements
+        for (int i = 0; i < N; i++) {
+            arr[i] = scanner.nextInt();
+        }
+
+        int minSwapsAsc = countSwapsToSort(arr.clone(), true);
+        int minSwapsDesc = countSwapsToSort(arr.clone(), false);
+
+        // Output the minimum swaps required
+        System.out.println(Math.min(minSwapsAsc, minSwapsDesc));
+
+        scanner.close();
+    }
+
+    private static int countSwapsToSort(int[] arr, boolean ascending) {
+        int n = arr.length;
+        int[] temp = arr.clone();
+        int[] index = new int[n];
+
+        // Store the original indices of elements
+        for (int i = 0; i < n; i++) {
+            index[i] = i;
+        }
+
+        // Sort the array based on ascending or descending order
+        Arrays.sort(temp);
+        if (!ascending) {
+            // Reverse for descending
+            for (int i = 0; i < n / 2; i++) {
+                int tempValue = temp[i];
+                temp[i] = temp[n - i - 1];
+                temp[n - i - 1] = tempValue;
+            }
+        }
+
+        // Create a map for the index positions after sorting
+        Map<Integer, Integer> sortedIndexMap = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            sortedIndexMap.put(temp[i], i);
+        }
+
+        // Count the number of swaps
+        boolean[] visited = new boolean[n];
+        int swaps = 0;
+
+        for (int i = 0; i < n; i++) {
+            if (visited[i] || sortedIndexMap.get(arr[i]) == i) {
+                continue; // If already visited or in the right place
+            }
+
+            // Count the size of the cycle
+            int cycleSize = 0;
+            int j = i;
+
+            while (!visited[j]) {
+                visited[j] = true;
+                j = sortedIndexMap.get(arr[j]);
+                cycleSize++;
+            }
+
+            // If there are n nodes in the cycle, we need (n-1) swaps
+            if (cycleSize > 0) {
+                swaps += (cycleSize - 1);
+            }
+        }
+
+        return swaps;
+    }
+}
