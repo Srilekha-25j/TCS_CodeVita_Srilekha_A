@@ -1,0 +1,49 @@
+import java.util.*;
+import java.io.*;
+
+public class Tcs2 {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String goodString = scanner.nextLine();
+        String name = scanner.nextLine();
+        int totalDistance = calculateTotalDistance(goodString, name);
+        System.out.println(totalDistance);
+        scanner.close();
+    }
+
+    private static int calculateTotalDistance(String goodString, String name) {
+        int totalDistance = 0;
+        char previousGoodChar = '\0'; 
+        for (char currentChar : name.toCharArray()) {
+            if (goodString.indexOf(currentChar) != -1) {
+                previousGoodChar = currentChar;
+                continue;
+            }
+
+            char closestChar = findClosestGoodChar(goodString, currentChar, previousGoodChar);
+            totalDistance += Math.abs(currentChar - closestChar);
+            previousGoodChar = closestChar; 
+        }
+        return totalDistance;
+    }
+
+    private static char findClosestGoodChar(String goodString, char targetChar, char previousGoodChar) {
+        char closestChar = '\0';
+        int minDistance = Integer.MAX_VALUE;
+        for (char goodChar : goodString.toCharArray()) {
+            int distance = Math.abs(targetChar - goodChar);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestChar = goodChar;
+            } else if (distance == minDistance) {
+                
+                if (closestChar != '\0' && Math.abs(previousGoodChar - goodChar) < Math.abs(previousGoodChar - closestChar)) {
+                    closestChar = goodChar;
+                }
+            }
+        }
+
+        return closestChar;
+    }
+}
